@@ -38,7 +38,11 @@ namespace LinesOfCode
                 Log("[INPUT] Enter your extensions to be scanned for (ex: .cs, .php): ");
                 extList.AddRange(((Console.ReadLine().ToString()).Replace(" ", "")).Split(','));
                 Log("[INPUT] Enter your ignore list (ex: designer, Version): ");
-                ignoreList.AddRange(((Console.ReadLine().ToString()).Replace(" ", "")).Split(','));
+                string ignoreEntries = Convert.ToString(Console.ReadLine());
+                if (!string.IsNullOrEmpty(ignoreEntries))
+                {
+                    ignoreList.AddRange(((ignoreEntries.ToString()).Replace(" ", "")).Split(','));
+                }
                 Log("[QUESTION] Do you want your current configuration to be written to the scan path as a config file? (y/n): ");
                 bool writeConfig = Console.ReadLine() == "y" ? true : false;
                 if (writeConfig)
@@ -73,23 +77,27 @@ namespace LinesOfCode
                 {
                     if (fileName.Contains(ext)) {
                         bool ignorable = false;
-                        foreach (string ignore in ignoreList)
+                        if (ignoreList.Count != 0)
                         {
-                            Log($"[INFO] Scanning {fileName} for ignore word [{ignore}] - ");
-                            if (!fileName.Contains(ignore))
+                            foreach (string ignore in ignoreList)
                             {
-                                Log("Check Failed", true);
-                            }
-                            else
-                            {
-                                Log("Check Fired", true);
-                                ignorable = true;
-                                break;
+                                Log($"[INFO] Scanning {fileName} for ignore word [{ignore}] - ");
+                                if (!fileName.Contains(ignore))
+                                {
+                                    Log("Check Failed", true);
+                                }
+                                else
+                                {
+                                    Log("Check Fired", true);
+                                    ignorable = true;
+                                    break;
+                                }
                             }
                         }
 
                         if (!ignorable)
                         {
+                            Log($"[INFO] Adding {fileName} to scanlist...", true);
                             files.Add(filePath);
                         }
                     }
@@ -100,20 +108,20 @@ namespace LinesOfCode
             {
                 fileNum++;
             }
-            Log($"\n[INFO] Found {fileNum} files which match your filters.\n");
             foreach (string file in files)
             {
                 Log("[MATCH] " + file, true);
             }
 
-            int lines = 0;
+            Int64 lines = 0;
 
             foreach (string file in files)
             {
+                Log($"[INFO] Counting lines in {file}", true);
                 using (StreamReader sr = new StreamReader(file))
                 {
                     string currentLine = string.Empty;
-                    int currentLineCount = 0;
+                    Int64 currentLineCount = 0;
                     while ((currentLine = sr.ReadLine()) != null)
                     {
                         if (currentLine != string.Empty)
@@ -125,6 +133,7 @@ namespace LinesOfCode
                 }
             }
 
+            Log($"[INFO] Found {fileNum} files which match your filters.", true);
             Log($"[INFO] The results contain a total of {lines} line(s).", true);
             Log($"[INFO] Thank you for using LinesOfCode - Made by Tibix.");
             Console.ReadLine();
