@@ -20,8 +20,30 @@ namespace LinesOfCode
             bool useConfig = false;
             List<string> files = new List<string>();
             Console.WriteAscii("LinesOfCode", Color.MediumSlateBlue);
-            Log("[INPUT] Enter your path to be scanned: ");
-            string path = Console.ReadLine().ToString();
+            string path = string.Empty;
+            SpecifyFolder:
+            if (args.Length == 0)
+            {
+                Log("[INPUT] Enter your path to be scanned: ");
+                string dir = Console.ReadLine().ToString();
+                if (Directory.Exists(dir))
+                    path = dir;
+                else
+                    Log("[ERROR] The folder specified doesn't exist.");
+                    goto SpecifyFolder;
+
+            }
+            else
+            {
+                if (Directory.Exists(args[0]))
+                {
+                    path = args[0];
+                } else
+                {
+                    Log("[ERROR] The folder specified in the argument doesn't exist.");
+                    goto SpecifyFolder;
+                }
+            }
             string configPath = path + @"\linesConfig.json";
             if (File.Exists(configPath))
             {
@@ -40,9 +62,7 @@ namespace LinesOfCode
                 Log("[INPUT] Enter your ignore list (ex: designer, Version): ");
                 string ignoreEntries = Convert.ToString(Console.ReadLine());
                 if (!string.IsNullOrEmpty(ignoreEntries))
-                {
                     ignoreList.AddRange(((ignoreEntries.ToString()).Replace(" ", "")).Split(','));
-                }
                 Log("[QUESTION] Do you want your current configuration to be written to the scan path as a config file? (y/n): ");
                 bool writeConfig = Console.ReadLine() == "y" ? true : false;
                 if (writeConfig)
