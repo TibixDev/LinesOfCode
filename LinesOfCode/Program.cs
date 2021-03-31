@@ -27,10 +27,14 @@ namespace LinesOfCode
                 Log("[INPUT] Enter your path to be scanned: ");
                 string dir = Console.ReadLine().ToString();
                 if (Directory.Exists(dir))
+                {
                     path = dir;
+                }
                 else
+                {
                     Log("[ERROR] The folder specified doesn't exist.");
                     goto SpecifyFolder;
+                }
 
             }
             else
